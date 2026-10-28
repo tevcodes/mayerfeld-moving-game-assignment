@@ -20,7 +20,14 @@ if (
   );
 }
 
-// TODO: game state (playerY, velocity, score, obstacle list, running flag)
+//Game State Variables
+let gameRunning = false;
+let score = 0;
+let playerY = 0;
+let velocityY = 0;
+const gravity = 0.6;
+const jumpForce = 12;
+let animationFrameId = null;
 
 function setState(state) {
   // state: "ready" | "playing" | "over"
@@ -30,15 +37,39 @@ function setState(state) {
 
 function startGame() {
   setState("playing");
-  // TODO: reset state, start the requestAnimationFrame loop
+  gameRunning = true;
+  score = 0;
+  playerY = 0;
+  velocityY = 0;
+  scoreEl.textContent = score;
+
+  obstacles.innerHTML = "";
+
+  if (animationFrameId) cancelAnimationFrame(animationFrameID);
+  gameLoop();
 }
 
 function jump() {
-  // TODO: only if on the ground. Toggle .is-jumping on the player
+  if (playerY === 0 && gameRunning) {
+    velocityY = jumpForce;
+    player.classList.add("is-jumping");
+  }
 }
 
 function updatePlayer() {
-  // TODO: apply gravity, then player.style.setProperty("--player-y", playerY)
+  if(playerY > 0 || velocity > 0) {
+    velocityY -= gravity;
+    playerY += velocityY;
+  }
+
+  // Prevent falling below the ground
+  if (playerY <= 0) {
+    playerY = 0;
+    velocityY = 0;
+    player.classList.remove("is-jumping");
+  }
+
+  player.style.setProperty("--player-y", playerY);
 }
 
 function spawnObstacle() {
