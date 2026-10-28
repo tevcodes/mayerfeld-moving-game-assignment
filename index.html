@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jumping Game</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <script src="./js/script.js" defer></script>
+  </head>
+
+  <body>
+    <main>
+      <h1 class="visually-hidden">Jumping Game</h1>
+
+      <!-- JS hook: data-game. State classes (toggled by JS): .is-ready, .is-playing, .is-over -->
+      <section class="game" data-game aria-label="Game area">
+        <p class="score">
+          Score: <output data-score aria-live="off">0</output>
+        </p>
+
+        <div class="sky"></div>
+
+        <!-- JS hook: data-player. JS sets --player-y (px above the ground). State class: .is-jumping -->
+        <div class="player" data-player></div>
+
+        <!-- JS hook: data-obstacles. JS adds obstacles here and sets --x on each -->
+        <div class="obstacles" data-obstacles></div>
+
+        <div class="ground"></div>
+
+        <!-- Shown while .is-ready -->
+        <div class="overlay overlay--start">
+          <p>Press <kbd>Space</kbd> to start</p>
+        </div>
+
+        <!-- Shown while .is-over -->
+        <div class="overlay overlay--end" role="status">
+          <p class="overlay__title">Game over</p>
+          <p>Final score: <output data-final-score>0</output></p>
+          <button type="button" data-action="restart">Play again</button>
+        </div>
+      </section>
+
+      <!-- The obstacle design lives here, so you can style it. JS clones it. -->
+      <template data-obstacle-template>
+        <div class="obstacle"></div>
+      </template>
+    </main>
+  </body>
+</html>
