@@ -45,7 +45,7 @@ function startGame() {
 
   obstacles.innerHTML = "";
 
-  if (animationFrameId) cancelAnimationFrame(animationFrameID);
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
   gameLoop();
 }
 
@@ -57,7 +57,7 @@ function jump() {
 }
 
 function updatePlayer() {
-  if(playerY > 0 || velocity > 0) {
+  if(playerY > 0 || velocityY > 0) {
     velocityY -= gravity;
     playerY += velocityY;
   }
@@ -70,6 +70,18 @@ function updatePlayer() {
   }
 
   player.style.setProperty("--player-y", playerY);
+}
+
+function gameLoop() {
+  if (!gameRunning) return;
+  updatePlayer();
+  score += 0.05;
+  scoreEl.textContent = Math.floor(score);
+
+  // TODO: Hook in obstacle spawning & movement
+  // TODO: Hook in collision detection
+
+  animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 function spawnObstacle() {
@@ -92,7 +104,12 @@ function endGame() {
 document.addEventListener("keydown", (event) => {
   if (event.code !== "Space") return;
   event.preventDefault(); // stops the page scrolling
-  // TODO: start the game if ready, otherwise jump
+  
+  if (!gameRunning) {
+    startGame();
+  } else {
+    jump();
+  }
 });
 
 restartBtn.addEventListener("click", startGame);
