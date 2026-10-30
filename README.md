@@ -49,6 +49,13 @@ CSS turns these into movement with `transform`. JS must never set `top`,
 JS may add `obstacle--tall` or `obstacle--small` to a spawned obstacle. Design
 must style both.
 
+## Known issues / to do when we regroup
+
+- Game width is variable. Obstacle travel distance must come from
+  `game.clientWidth`, not a hard-coded number.
+- Add touch support: tap on `.game` should start and jump. If this lands,
+  update the start overlay text in `index.html` to "Press Space or tap".
+
 ### Hitboxes
 
 Collision uses `getBoundingClientRect()`, so **the element's CSS box is the
