@@ -1,8 +1,14 @@
 :root {
   --ground-height: 4rem;
   --player-size: 3rem;
+  --burnt-orange: #cc5500;
+  --burnt-orange-dark: #a64400;
+  --sky-top: #1b2a49;
+  --sky-bottom: #f4a261;
+  --ground: #3b2a20;
+  --cactus: #2e7d32;
+  --text: #fff;
 }
-
 *,
 *::before,
 *::after {
@@ -12,6 +18,8 @@
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
+  color: var(--text);
+  background: #111;
 }
 
 main {
@@ -25,24 +33,75 @@ main {
   position: relative;
   width: min(100%, 48rem);
   height: 20rem;
-  overflow: hidden; /* obstacles are clipped as they leave the area */
+  overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--sky-top), var(--sky-bottom));
+}
+
+.score {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  z-index: 2;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .ground {
   position: absolute;
   inset: auto 0 0 0;
   height: var(--ground-height);
-  background: #444;
+  background-color: var(--ground);
+  border-top: 4px solid #1f140d;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 1.5rem,
+    rgba(255, 255, 255, 0.15) 1.5rem 1.75rem
+  );
+}
+
+.is-playing .ground {
+  animation: scroll-ground 0.5s linear infinite;
 }
 
 .player {
   position: absolute;
   left: 3rem;
   bottom: var(--ground-height);
+  z-index: 1;
   width: var(--player-size);
   height: var(--player-size);
-  background: orange;
+  background: var(--burnt-orange);
+  border-radius: 0.5rem;
   transform: translateY(calc(var(--player-y, 0) * -1px));
+}
+
+.player::before {
+  content: "";
+  position: absolute;
+  top: 0.7rem;
+  right: 0.6rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  background: #333;
+  border-radius: 50%;
+  box-shadow: inset -0.15rem 0 0 #000;
+}
+
+.player.is-jumping {
+  background: var(--burnt-orange-dark);
+}
+
+.is-over .player {
+  filter: grayscale(1);
 }
 
 .obstacles {
@@ -56,21 +115,102 @@ main {
   bottom: var(--ground-height);
   width: 1.5rem;
   height: 3rem;
-  background: green;
+  background: var(--cactus);
+  border-radius: 0.75rem 0.75rem 0 0;
   transform: translateX(calc(var(--x, 0) * -1px));
+}
+
+.obstacle::before,
+.obstacle::after {
+  content: "";
+  position: absolute;
+  width: 0.5rem;
+  height: 1rem;
+  background: var(--cactus);
+  border-radius: 0.25rem;
+}
+
+.obstacle::before {
+  left: -0.4rem;
+  top: 1rem;
+}
+.obstacle::after {
+  right: -0.4rem;
+  top: 0.6rem;
+}
+
+/* Variants JS may add (see README) */
+.obstacle--tall {
+  height: 4.5rem;
+}
+.obstacle--small {
+  width: 1.25rem;
+  height: 2rem;
+}
+.obstacle--small::before,
+.obstacle--small::after {
+  display: none;
 }
 
 /* Overlays: visible only in the matching state */
 .overlay {
   position: absolute;
   inset: 0;
+  z-index: 3;
   display: none;
   place-content: center;
+  justify-items: center;
+  gap: 0.5rem;
   text-align: center;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
 }
 .is-ready .overlay--start,
 .is-over .overlay--end {
   display: grid;
+}
+
+.overlay p {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.overlay .overlay__title {
+  font-size: 2rem;
+  font-weight: 800;
+}
+kbd {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.15);
+  font: inherit;
+  font-weight: 700;
+}
+
+.overlay button {
+  margin-top: 0.75rem;
+  padding: 0.6rem 1.5rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--burnt-orange);
+  border: 0;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    transform 0.1s;
+}
+
+.overlay button:hover {
+  background: var(--burnt-orange-dark);
+}
+.overlay button:active {
+  transform: scale(0.96);
+}
+.overlay button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
 }
 
 .visually-hidden {
@@ -80,4 +220,30 @@ main {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+@keyframes scroll-ground {
+  to {
+    background-position-x: -1.75rem; /* must equal one gradient period */
+  }
+}
+
+@media (max-width: 30rem) {
+  .score {
+    font-size: 1rem;
+    top: 0.75rem;
+    right: 1rem;
+  }
+  .overlay p {
+    font-size: 1.1rem;
+  }
+  .overlay .overlay__title {
+    font-size: 1.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-playing .ground {
+    animation: none;
+  }
 }
